@@ -1,0 +1,70 @@
+========================================================================
+INTERLAGOS É A CORRIDA COM MAIS CHANCE DE CHUVA DA F1?
+========================================================================
+
+VALIDAÇÃO: O ERA5 ENXERGA A CHUVA DAS CORRIDAS? (2023 em diante)
+  Corridas com pneu de chuva (10%+ das voltas): 8. O ERA5 marcou chuva em 6.
+    2023 Mônaco            30% das voltas com pneu de chuva   ERA5: 0,8 mm
+    2023 Zandvoort         24% das voltas com pneu de chuva   ERA5: 0,2 mm
+    2024 Montreal          65% das voltas com pneu de chuva   ERA5: 1,1 mm
+    2024 Silverstone       24% das voltas com pneu de chuva   ERA5: 1,8 mm
+    2024 Interlagos        100% das voltas com pneu de chuva   ERA5: 3,9 mm
+    2025 Melbourne         74% das voltas com pneu de chuva   ERA5: 1,1 mm
+    2025 Silverstone       74% das voltas com pneu de chuva   ERA5: 0,2 mm
+    2025 Spa               25% das voltas com pneu de chuva   ERA5: 1,9 mm
+  Corridas secas: 81. O ERA5 marcou chuva (alarme falso) em 6.
+    2023 Miami             ERA5: 0,5 mm
+    2023 Áustria           ERA5: 1,9 mm
+    2025 Suzuka            ERA5: 3,2 mm
+    2025 Miami             ERA5: 13,2 mm
+    2026 Miami             ERA5: 1,5 mm
+    2026 Áustria           ERA5: 0,9 mm
+
+CHANCE DE CHUVA NA HORA DA CORRIDA (data e horário de 2026, 1996 a 2025)
+  pista             largada local      chance          IC 95%   dia exato   1º lugar
+  Áustria           06-28 15:00           40%     32% a  48%    13 de 30       57%
+  Interlagos        11-08 14:00           39%     31% a  47%    10 de 30       41%
+  Kuala Lumpur      10-04 15:00           30%     22% a  38%    11 de 30        2%
+  Mônaco            06-07 15:00           20%     12% a  29%     6 de 30        0%
+  Spa               07-19 15:00           19%     12% a  26%     5 de 30        0%
+  Silverstone       07-05 15:00           18%     12% a  23%     5 de 30        0%
+  Suzuka            03-29 14:00           18%     14% a  22%     5 de 30        0%
+  Miami             05-03 13:00           16%     10% a  22%     6 de 30        0%
+  Montreal          05-24 16:00           16%     11% a  21%     4 de 30        0%
+  Zandvoort         08-23 15:00           15%     10% a  20%     2 de 30        0%
+  Hungria           07-26 15:00           14%     10% a  19%     7 de 30        0%
+  Monza             09-06 15:00           13%      9% a  18%     2 de 30        0%
+  Xangai            03-15 15:00           11%      7% a  15%     4 de 30        0%
+  Singapura         10-11 20:00           10%      5% a  16%     3 de 30        0%
+  Austin            10-25 15:00           10%      5% a  15%     3 de 30        0%
+  Barcelona         06-14 15:00            9%      5% a  12%     1 de 30        0%
+  Cidade do México  11-01 14:00            8%      3% a  14%     2 de 30        0%
+  Melbourne         03-08 15:00            5%      1% a   9%     2 de 30        0%
+  Madri             09-13 15:00            3%      1% a   6%     2 de 30        0%
+  Las Vegas         11-21 20:00            2%      0% a   5%     2 de 30        0%
+  Baku              09-26 15:00            2%      0% a   4%     0 de 30        0%
+  Catar             11-29 19:00            1%      0% a   2%     1 de 30        0%
+  Abu Dhabi         12-06 17:00            0%      0% a   1%     0 de 30        0%
+
+  Interlagos: 2º lugar, 39% (de 31% a 47%). Primeiro lugar em 41% e entre os 3 primeiros em 100% dos sorteios de anos.
+
+  Interlagos contra as outras (mesmos sorteios de anos, intervalo de 95%)
+    Áustria           diferença -1 pp (de -12 a 10 pp); 0,98 vezes (de 0,74 a 1,29); Interlagos maior em 41% dos sorteios
+    Kuala Lumpur      diferença +9 pp (de -1 a 18 pp); 1,28 vezes (de 0,96 a 1,74); Interlagos maior em 95% dos sorteios
+    Mônaco            diferença +19 pp (de 8 a 29 pp); 1,91 vezes (de 1,30 a 3,16); Interlagos maior em 100% dos sorteios
+    Spa               diferença +20 pp (de 9 a 31 pp); 2,05 vezes (de 1,34 a 3,38); Interlagos maior em 100% dos sorteios
+    Silverstone       diferença +21 pp (de 12 a 31 pp); 2,16 vezes (de 1,54 a 3,27); Interlagos maior em 100% dos sorteios
+
+  O resultado muda com o critério de chuva?
+    0,2 mm: Interlagos em 1º (58%). Top 3: Interlagos 58%, Áustria 51%, Kuala Lumpur 47%
+    0,5 mm: Interlagos em 2º (39%). Top 3: Áustria 40%, Interlagos 39%, Kuala Lumpur 30%
+    1,0 mm: Interlagos em 2º (26%). Top 3: Áustria 31%, Interlagos 26%, Kuala Lumpur 20%
+    2,0 mm: Interlagos em 2º (16%). Top 3: Áustria 23%, Interlagos 16%, Kuala Lumpur 10%
+
+INTERLAGOS EM CADA MÊS (chance de chuva no horário da corrida)
+  jan 69%  fev 67%  mar 63%  abr 32%  mai 17%  jun 11%  jul 9%  ago 11%  set 19%  out 32%  nov 43%  dez 54%
+  Mês do GP (nov): 43%. Mais chuvoso: jan (69%). Mais seco: jul (9%).
+
+GRÁFICOS
+  chuva_ranking.png (principal) e chuva_interlagos_ano.png (apoio)
+  Título sugerido: Áustria e Interlagos empatam no topo da chuva na F1

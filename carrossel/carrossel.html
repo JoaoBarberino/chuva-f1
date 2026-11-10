@@ -1,0 +1,406 @@
+<title>Estúdio da Terça</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="fontes.css">
+<style>
+/* Ferramenta: painel de controles em cima (colunas que quebram), carrossel de 7 páginas embaixo com rolagem lateral própria */
+:root {
+  --bg: #F3F4F6; --panel: #FFFFFF; --fg: #14161A; --muted: #5F6570; --line: #DCDFE4; --sel: #1546C0; --sel-fg: #FFFFFF;
+  --ui: "Lexend", "Segoe UI", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #111317; --panel: #1A1D22; --fg: #ECEEF1; --muted: #9EA4AE; --line: #2E333A; --sel: #6F96FF; --sel-fg: #0B0D10; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #111317; --panel: #1A1D22; --fg: #ECEEF1; --muted: #9EA4AE; --line: #2E333A; --sel: #6F96FF; --sel-fg: #0B0D10; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--fg); font-family: var(--ui); font-size: 15px; }
+.wrap { max-width: none; margin: 0 auto; padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+header h1 { font-size: 1.8rem; margin: 0 0 4px; font-weight: 800; }
+header p { margin: 0; color: var(--muted); max-width: 72ch; line-height: 1.5; }
+
+.painel { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.grupo { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.grupo h2 { margin: 0; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.campo { display: grid; gap: 6px; }
+.campo > label, .campo > .rot { font-size: .85rem; font-weight: 600; }
+.linha-ctrl { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chip { appearance: none; font: inherit; font-size: .82rem; border: 1.5px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--sel); color: var(--sel-fg); border-color: var(--sel); }
+.chip:focus-visible, .cor:focus-visible, select:focus-visible, input:focus-visible, .botao:focus-visible { outline: 3px solid var(--sel); outline-offset: 2px; }
+.cor { appearance: none; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
+.cor[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--sel); }
+input[type="color"] { width: 38px; height: 30px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); padding: 2px; cursor: pointer; }
+select { font: inherit; font-size: .9rem; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); width: 100%; }
+input[type="range"] { width: 100%; accent-color: var(--sel); }
+.barra-acoes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.botao { appearance: none; font: inherit; font-weight: 600; border-radius: 8px; padding: 8px 14px; cursor: pointer; border: 1.5px solid var(--sel); background: var(--sel); color: var(--sel-fg); }
+.botao.sec { background: transparent; color: var(--fg); border-color: var(--line); }
+#aviso { color: var(--muted); font-size: .88rem; }
+
+.carrossel { overflow-x: auto; padding-bottom: 10px; }
+.trilho { display: flex; gap: 16px; width: max-content; }
+.quadro { display: grid; gap: 6px; }
+.quadro .leg { font-size: .8rem; color: var(--muted); }
+.palco { position: relative; overflow: hidden; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+
+/* ---------- Página do carrossel (1080 px de largura, escalada) ---------- */
+.slide { position: absolute; top: 0; left: 0; width: 1080px; transform-origin: 0 0; overflow: hidden;
+  background-color: var(--s-bg); color: var(--s-fg); font-family: var(--s-fb); }
+.slide .textura, .slide .vinheta { position: absolute; inset: 0; pointer-events: none; }
+.slide .conteudo { position: absolute; inset: 0; padding: 96px 90px 120px; display: flex; flex-direction: column; gap: 34px; text-align: var(--s-align); align-items: var(--s-items); }
+.slide .kicker { font-weight: 700; font-size: 24px; letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
+.slide .titulo { font-family: var(--s-fd); font-weight: var(--s-fdw); font-size: calc(104px * var(--s-tam)); line-height: 1.02; letter-spacing: var(--s-ls);
+  text-transform: var(--s-tt); margin: 0; display: flex; flex-direction: column; gap: 12px; align-items: var(--s-items); }
+.slide .titulo.menor { font-size: calc(84px * var(--s-tam)); }
+.slide .hl { display: inline-block; padding: 4px 22px 8px; line-height: 1.02; }
+.slide .hl.caixa { background: var(--s-acc); color: var(--s-acc-txt); }
+.slide .hl.contorno { border: 7px solid var(--s-acc); padding: 0 18px 4px; }
+.slide .hl.marca { background: linear-gradient(transparent 52%, var(--s-acc) 52%); padding: 0 8px; color: var(--s-fg); }
+.slide .hl.cor { color: var(--s-acc); padding: 0; }
+.slide .texto { font-size: 34px; line-height: 1.42; max-width: 860px; font-weight: 400; }
+.slide .texto.barra { border-left: 7px solid var(--s-fg); padding-left: 26px; }
+.slide[data-align="center"] .texto.barra { border-left: 0; padding-left: 0; border-top: 6px solid var(--s-fg); padding-top: 22px; }
+.slide .lista { display: grid; gap: 22px; margin: 0; padding: 0; list-style: none; }
+.slide .lista li { display: flex; gap: 20px; align-items: center; font-size: 38px; font-weight: 700; font-family: var(--s-fd); text-align: left; }
+.slide .lista .ic { flex: none; width: 52px; height: 52px; display: grid; place-items: center; }
+.slide .lista .ic svg { width: 52px; height: 52px; }
+.slide .forte { display: inline-block; background: var(--s-acc); color: var(--s-acc-txt); font-family: var(--s-fd); font-weight: 700; font-size: 38px; padding: 14px 26px; }
+.slide .grande { font-family: var(--s-fd); font-weight: var(--s-fdw); line-height: .9; }
+.slide .comp { display: grid; gap: 30px; width: 100%; }
+.slide .comp .it { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 20px; border-bottom: 3px solid var(--s-linha); padding-bottom: 18px; text-align: left; }
+.slide .comp .it .n { font-size: 44px; font-weight: 700; font-family: var(--s-fd); }
+.slide .comp .it .v { font-size: 120px; }
+.slide .comp .it.dest .n, .slide .comp .it.dest .v { color: var(--s-acc-forte); }
+.slide .ranking { display: grid; gap: 16px; width: 100%; }
+.slide .ranking .r { display: grid; grid-template-columns: 250px 1fr 96px; align-items: center; gap: 18px; font-size: 32px; text-align: left; }
+.slide .ranking .r .nm { text-align: right; white-space: nowrap; }
+.slide .ranking .r .bar { height: 38px; background: var(--s-fg); opacity: .32; border-radius: var(--s-rad); }
+.slide .ranking .r.fam .bar { opacity: .7; }
+.slide .ranking .r.fam .nm, .slide .ranking .r.fam .pc { font-weight: 700; }
+.slide .ranking .r.dest .bar { background: var(--s-acc-forte); opacity: 1; }
+.slide .ranking .r.dest .nm, .slide .ranking .r.dest .pc { font-weight: 800; color: var(--s-acc-forte); font-size: 36px; }
+.slide[data-barras="contorno"] .ranking .r .bar { background: transparent; border: 4px solid var(--s-fg); opacity: .55; }
+.slide[data-barras="contorno"] .ranking .r.dest .bar { background: var(--s-acc-forte); border-color: var(--s-acc-forte); opacity: 1; }
+.slide .ranking .r .pc { font-variant-numeric: tabular-nums; }
+.slide .rodape { position: absolute; left: 90px; right: 90px; bottom: 50px; display: flex; justify-content: space-between; align-items: center; font-size: 22px; opacity: .85; gap: 20px; }
+.slide .rodape .fonte { font-size: 19px; opacity: .85; }
+.slide .visual { position: absolute; pointer-events: none; }
+.slide .bandeira { position: absolute; background: conic-gradient(var(--s-flag) 25%, transparent 0 50%, var(--s-flag) 0 75%, transparent 0) 0 0 / var(--s-q2) var(--s-q2); opacity: .95; }
+.slide .capa-num { margin-top: auto; display: flex; flex-direction: column; align-items: var(--s-items); gap: 14px; }
+.slide .capa-num .grande { font-size: calc(250px * var(--s-num)); color: var(--s-acc-forte); line-height: .82; }
+.slide .capa-num .cap { font-size: 34px; font-weight: 600; line-height: 1.2; white-space: nowrap; }
+.slide .intervalos { display: grid; gap: 22px; width: 100%; }
+.slide .intervalos .cab { font-size: 24px; opacity: .8; text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+.slide .intervalos .iv { display: grid; grid-template-columns: 210px 1fr 90px; align-items: center; gap: 18px; font-size: 30px; }
+.slide .intervalos .iv .nm { text-align: right; }
+.slide .intervalos .trk { position: relative; height: 40px; border-left: 2px solid var(--s-linha); }
+.slide .intervalos .seg { position: absolute; top: 12px; height: 16px; background: var(--s-fg); opacity: .55; }
+.slide .intervalos .pt { position: absolute; top: 4px; width: 32px; height: 32px; margin-left: -16px; border-radius: 50%; background: var(--s-fg); }
+.slide .intervalos .iv.dest .seg { background: var(--s-acc-forte); opacity: 1; }
+.slide .intervalos .iv.dest .pt { background: var(--s-acc-forte); }
+.slide .intervalos .iv.dest .nm, .slide .intervalos .iv.dest .v { color: var(--s-acc-forte); font-weight: 800; }
+.slide .intervalos .eixo { display: grid; grid-template-columns: 210px 1fr 90px; gap: 18px; font-size: 22px; opacity: .7; }
+.slide .intervalos .eixo .esc { position: relative; height: 30px; }
+.slide .intervalos .eixo .esc span { position: absolute; top: 0; transform: translateX(-50%); font-variant-numeric: tabular-nums; }
+.slide .intervalos .trk .tick { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--s-linha); }
+.slide .meses { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; width: 100%; flex-grow: 1; min-height: 360px; max-height: 470px; }
+.slide .meses .mes { display: grid; grid-template-rows: auto 1fr auto; justify-items: center; gap: 10px; }
+.slide .meses .col { width: 100%; display: flex; align-items: flex-end; }
+.slide .meses .b { width: 100%; background: var(--s-fg); opacity: .32; border-radius: var(--s-rad) var(--s-rad) 0 0; }
+.slide .meses .v { font-size: 24px; font-variant-numeric: tabular-nums; opacity: .85; }
+.slide .meses .m { font-size: 26px; text-transform: uppercase; letter-spacing: .04em; }
+.slide .meses .dest .b { background: var(--s-acc-forte); opacity: 1; }
+.slide .meses .dest .v, .slide .meses .dest .m { color: var(--s-acc-forte); font-weight: 800; opacity: 1; font-size: 30px; }
+.slide .defin { font-size: 22px; opacity: .75; line-height: 1.35; white-space: normal; font-weight: 400; }
+.slide .gotas10 { margin-top: auto; display: grid; gap: 18px; }
+.slide .gotas10 .fila { display: flex; gap: 18px; }
+.slide .gotas10 .cap { font-size: 30px; font-weight: 600; }
+.slide .seta { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Estúdio da Terça</h1>
+    <p>Carrossel de 7 páginas sobre a chuva em Interlagos, no estilo da referência. Mexa nos controles: todas as páginas mudam juntas. A rolagem lateral mostra o carrossel inteiro.</p>
+  </header>
+
+  <div class="painel">
+    <section class="grupo" aria-labelledby="g1"><h2 id="g1">Cores</h2>
+      <div class="campo"><span class="rot">Fundo</span><div class="linha-ctrl" id="c-fundo"></div></div>
+      <div class="campo"><span class="rot">Destaque (caixas e ícones)</span><div class="linha-ctrl" id="c-dest"></div></div>
+      <div class="campo"><span class="rot">Estilo do destaque</span><div class="linha-ctrl" id="c-hl"></div></div>
+    </section>
+    <section class="grupo" aria-labelledby="g2"><h2 id="g2">Fundo e textura</h2>
+      <div class="campo"><span class="rot">Textura</span><div class="linha-ctrl" id="c-tex"></div></div>
+      <div class="campo"><label for="c-int">Intensidade da textura</label><input type="range" id="c-int" min="0" max="100" value="45"></div>
+      <div class="campo"><label for="c-vin">Vinheta nas bordas</label><input type="range" id="c-vin" min="0" max="100" value="45"></div>
+      <div class="campo"><span class="rot">Elemento visual</span><div class="linha-ctrl" id="c-vis"></div></div>
+      <div class="campo"><span class="rot">Bandeira quadriculada</span><div class="linha-ctrl" id="c-band"></div></div>
+      <div class="campo"><label for="c-bq">Tamanho dos quadrados da bandeira</label><input type="range" id="c-bq" min="14" max="48" value="24"></div>
+      <div class="campo"><span class="rot">Cor da bandeira</span><div class="linha-ctrl" id="c-bcor"></div></div>
+    </section>
+    <section class="grupo" aria-labelledby="g3"><h2 id="g3">Tipografia</h2>
+      <div class="campo"><label for="c-fd">Fonte dos títulos</label><select id="c-fd"></select></div>
+      <div class="campo"><label for="c-fb">Fonte dos textos</label><select id="c-fb"></select></div>
+      <div class="campo"><span class="rot">Peso do título</span><div class="linha-ctrl" id="c-peso"></div></div>
+      <div class="campo"><label for="c-tam">Tamanho do título</label><input type="range" id="c-tam" min="75" max="130" value="100"></div>
+      <div class="campo"><span class="rot">Letras do título</span><div class="linha-ctrl" id="c-caixa"></div></div>
+    </section>
+    <section class="grupo" aria-labelledby="g4"><h2 id="g4">Layout e detalhes</h2>
+      <div class="campo"><span class="rot">Formato</span><div class="linha-ctrl" id="c-fmt"></div></div>
+      <div class="campo"><span class="rot">Alinhamento</span><div class="linha-ctrl" id="c-ali"></div></div>
+      <div class="campo"><span class="rot">Marcador das listas</span><div class="linha-ctrl" id="c-mark"></div></div>
+      <div class="campo"><span class="rot">Barras do gráfico</span><div class="linha-ctrl" id="c-bar"></div></div>
+      <div class="campo"><span class="rot">Mostrar</span><div class="linha-ctrl" id="c-mostrar"></div></div>
+    </section>
+  </div>
+
+  <div class="barra-acoes">
+    <span class="rot" style="font-weight:600">Modelos com bandeira:</span>
+    <span class="linha-ctrl" id="c-modelos"></span>
+  </div>
+  <div class="barra-acoes">
+    <span class="rot" style="font-weight:600">Outras combinações:</span>
+    <span class="linha-ctrl" id="c-presets"></span>
+  </div>
+  <div class="barra-acoes">
+    <label for="c-zoom" style="font-weight:600">Tamanho da prévia</label>
+    <input type="range" id="c-zoom" min="220" max="560" value="340" style="width:180px">
+    <button class="botao" id="copiar" type="button">Copiar minha escolha</button>
+    <span id="aviso" aria-live="polite"></span>
+  </div>
+
+  <div class="carrossel" aria-label="Carrossel"><div class="trilho" id="trilho"></div></div>
+</div>
+
+<script>
+const FUNDOS = [["Azul royal","#1646B8"],["Azul-marinho","#0D1B3D"],["Preto","#0E0F12"],["Vermelho","#C8102E"],["Verde","#00523A"],["Roxo","#3E2A8C"],["Grafite","#2B2F36"],["Branco","#FFFFFF"],["Areia","#ECE6DA"]];
+const DESTAQUES = [["Branco","#FFFFFF"],["Amarelo","#FFD100"],["Vermelho","#E4002B"],["Azul","#1E6BFF"],["Ciano","#29D3E8"],["Laranja","#FF7A1A"],["Preto","#111111"]];
+const FONTES_T = [
+  ["Lexend (parecida com a referência)", "Lexend", 800, 1, "-0.01em"], ["Outfit", "Outfit", 800, 1, "-0.01em"], ["Montserrat", "Montserrat", 900, 0.92, "-0.01em"],
+  ["Poppins", "Poppins", 800, 0.95, "-0.01em"], ["Plus Jakarta Sans", "Plus Jakarta Sans", 800, 0.97, "-0.02em"], ["Sora", "Sora", 800, 0.95, "-0.02em"],
+  ["Archivo", "Archivo", 900, 1, "-0.01em"], ["Barlow Condensed", "Barlow Condensed", 800, 1.22, "0"], ["Bebas Neue", "Bebas Neue", 400, 1.38, "0.01em"],
+  ["IBM Plex Sans Condensed (a atual)", "IBM Plex Sans Condensed", 700, 1.12, "0"],
+];
+const FONTES_B = [["Igual ao título", null], ["Inter", "Inter"], ["Lexend", "Lexend"], ["Source Sans 3", "Source Sans 3"], ["IBM Plex Sans Condensed", "IBM Plex Sans Condensed"]];
+const MODELOS = [
+  { nome: "A. Grid de largada", s: { fundo: "#1646B8", dest: "#FFFFFF", hl: "caixa", tex: "planta", int: 45, vin: 45, vis: "gotas", band: "baixo", bq: 26, bcor: "texto", fd: 0, fb: 1, peso: "auto", tam: 100, caixa: "alta", fmt: "45", ali: "esq", mark: "circulo", bar: "solida", barra: true } },
+  { nome: "B. Bandeirada noturna", s: { fundo: "#0E0F12", dest: "#E4002B", hl: "caixa", tex: "fina", int: 30, vin: 60, vis: "numero", band: "topo", bq: 22, bcor: "texto", fd: 6, fb: 1, peso: "auto", tam: 105, caixa: "alta", fmt: "45", ali: "esq", mark: "check", bar: "solida", barra: true } },
+  { nome: "C. Box vermelho", s: { fundo: "#C8102E", dest: "#FFFFFF", hl: "caixa", tex: "pontos", int: 35, vin: 35, vis: "numero", band: "lateral", bq: 24, bcor: "texto", fd: 7, fb: 1, peso: "auto", tam: 112, caixa: "alta", fmt: "45", ali: "esq", mark: "seta", bar: "solida", barra: true } },
+  { nome: "D. Interlagos verde e amarelo", s: { fundo: "#00523A", dest: "#FFD100", hl: "caixa", tex: "planta", int: 35, vin: 40, vis: "gotas", band: "canto", bq: 30, bcor: "destaque", fd: 1, fb: 1, peso: "auto", tam: 100, caixa: "alta", fmt: "45", ali: "esq", mark: "circulo", bar: "arred", barra: true } },
+  { nome: "E. Pit wall amarelo", s: { fundo: "#2B2F36", dest: "#FFD100", hl: "contorno", tex: "diagonais", int: 35, vin: 30, vis: "numero", band: "baixo", bq: 34, bcor: "destaque", fd: 8, fb: 4, peso: "auto", tam: 96, caixa: "alta", fmt: "45", ali: "esq", mark: "numero", bar: "contorno", barra: true } },
+];
+const PRESETS = [
+  { nome: "Parecida com a referência", s: { fundo: "#1646B8", dest: "#FFFFFF", hl: "caixa", tex: "planta", int: 45, vin: 45, vis: "gotas", band: "nenhuma", bq: 24, bcor: "texto", fd: 0, fb: 1, peso: "auto", tam: 100, caixa: "alta", fmt: "45", ali: "esq", mark: "circulo", bar: "solida" } },
+  { nome: "Noite de corrida", s: { fundo: "#0E0F12", dest: "#E4002B", hl: "caixa", tex: "fina", int: 30, vin: 60, vis: "nenhum", band: "baixo", bq: 23, bcor: "texto", fd: 7, fb: 1, peso: "auto", tam: 110, caixa: "alta", fmt: "45", ali: "esq", mark: "check", bar: "solida" } },
+  { nome: "Vermelho da terça", s: { fundo: "#C8102E", dest: "#FFFFFF", hl: "caixa", tex: "pontos", int: 40, vin: 35, vis: "gotas", band: "nenhuma", bq: 24, bcor: "texto", fd: 9, fb: 4, peso: "auto", tam: 105, caixa: "alta", fmt: "45", ali: "esq", mark: "seta", bar: "solida" } },
+  { nome: "Brasil discreto", s: { fundo: "#00523A", dest: "#FFD100", hl: "caixa", tex: "planta", int: 35, vin: 40, vis: "gotas", band: "nenhuma", bq: 24, bcor: "texto", fd: 1, fb: 1, peso: "auto", tam: 100, caixa: "alta", fmt: "45", ali: "centro", mark: "circulo", bar: "arred" } },
+  { nome: "Papel técnico", s: { fundo: "#ECE6DA", dest: "#1646B8", hl: "marca", tex: "planta", int: 55, vin: 0, vis: "nenhum", band: "nenhuma", bq: 24, bcor: "texto", fd: 4, fb: 3, peso: "auto", tam: 95, caixa: "normal", fmt: "45", ali: "esq", mark: "numero", bar: "contorno" } },
+];
+/* Modelo usado: B (Bandeirada noturna). O gerar_carrossel.py pode trocar com --modelo A..E. */
+const PADRAO = MODELOS[window.MODELO ?? 1].s;
+let st = { ...PADRAO, num: true, seta: true, assin: true, zoom: 340 };
+/* Aberto direto no navegador, lembra o último ajuste feito à mão; gerado pelo Python, usa só o modelo. */
+if (!window.DADOS) { try { const s = JSON.parse(localStorage.getItem("estudio-terca-v3") || "null"); if (s && s.fundo) st = { ...st, ...s }; } catch (e) {} }
+
+const $ = (id) => document.getElementById(id);
+function lum(hex) { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, (n >> 8) & 255, n & 255].map((v) => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; }
+const escuro = (hex) => lum(hex) < 0.35;
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const contraste = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + .05) / (y + .05); };
+
+/* ---------------- controles ---------------- */
+function chips(id, chave, opcoes) {
+  const el = $(id); el.innerHTML = "";
+  opcoes.forEach(([rot, val]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = rot; b.id = `${id}-${val}`;
+    b.addEventListener("click", () => { st[chave] = val; render(); }); el.appendChild(b);
+  });
+}
+function cores(id, chave, lista) {
+  const el = $(id); el.innerHTML = "";
+  lista.forEach(([rot, hex]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "cor"; b.title = rot; b.setAttribute("aria-label", rot); b.style.background = hex; b.dataset.hex = hex;
+    b.addEventListener("click", () => { st[chave] = hex; render(); }); el.appendChild(b);
+  });
+  const inp = document.createElement("input"); inp.type = "color"; inp.id = `${id}-livre`; inp.title = "Outra cor"; inp.setAttribute("aria-label", "Outra cor");
+  inp.addEventListener("input", () => { st[chave] = inp.value; render(); }); el.appendChild(inp);
+}
+function toggles(id, lista) {
+  const el = $(id); el.innerHTML = "";
+  lista.forEach(([rot, chave]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = rot; b.id = `${id}-${chave}`;
+    b.addEventListener("click", () => { st[chave] = !st[chave]; render(); }); el.appendChild(b);
+  });
+}
+function montarControles() {
+  cores("c-fundo", "fundo", FUNDOS);
+  cores("c-dest", "dest", DESTAQUES);
+  chips("c-hl", "hl", [["Caixa", "caixa"], ["Contorno", "contorno"], ["Marca-texto", "marca"], ["Só a cor", "cor"]]);
+  chips("c-tex", "tex", [["Grade de planta", "planta"], ["Grade fina", "fina"], ["Pontos", "pontos"], ["Diagonais", "diagonais"], ["Lisa", "lisa"]]);
+  chips("c-vis", "vis", [["Gotas de chuva", "gotas"], ["Número gigante na capa", "numero"], ["Nenhum", "nenhum"]]);
+  chips("c-band", "band", [["Embaixo", "baixo"], ["Em cima", "topo"], ["Lateral", "lateral"], ["Canto", "canto"], ["Sem bandeira", "nenhuma"]]);
+  chips("c-bcor", "bcor", [["Cor do texto", "texto"], ["Cor de destaque", "destaque"]]);
+  chips("c-peso", "peso", [["Normal", "600"], ["Forte", "700"], ["Extra", "auto"], ["Máximo", "900"]]);
+  chips("c-caixa", "caixa", [["CAIXA ALTA", "alta"], ["Normal", "normal"]]);
+  chips("c-fmt", "fmt", [["Retrato 4:5", "45"], ["Quadrado 1:1", "11"]]);
+  chips("c-ali", "ali", [["Esquerda", "esq"], ["Centro", "centro"]]);
+  chips("c-mark", "mark", [["Check em círculo", "circulo"], ["Check", "check"], ["Seta", "seta"], ["Número", "numero"]]);
+  chips("c-bar", "bar", [["Sólidas", "solida"], ["Arredondadas", "arred"], ["Contorno", "contorno"]]);
+  toggles("c-mostrar", [["Barra ao lado do texto", "barra"], ["Número da página", "num"], ["Seta para arrastar", "seta"], ["Assinatura", "assin"]]);
+  if (st.barra === undefined) st.barra = true;
+  $("c-fd").innerHTML = FONTES_T.map((f, i) => `<option value="${i}">${f[0]}</option>`).join("");
+  $("c-fb").innerHTML = FONTES_B.map((f, i) => `<option value="${i}">${f[0]}</option>`).join("");
+  $("c-fd").addEventListener("change", (e) => { st.fd = +e.target.value; render(); });
+  $("c-fb").addEventListener("change", (e) => { st.fb = +e.target.value; render(); });
+  [["c-int", "int"], ["c-vin", "vin"], ["c-tam", "tam"], ["c-zoom", "zoom"], ["c-bq", "bq"]].forEach(([id, k]) => $(id).addEventListener("input", (e) => { st[k] = +e.target.value; render(); }));
+  MODELOS.forEach((p) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = p.nome; b.id = "modelo-" + p.nome[0];
+    b.addEventListener("click", () => { st = { ...st, ...p.s }; render(); }); $("c-modelos").appendChild(b);
+  });
+  PRESETS.forEach((p) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = p.nome;
+    b.addEventListener("click", () => { st = { ...st, ...p.s }; render(); }); $("c-presets").appendChild(b);
+  });
+}
+function marcarControles() {
+  const ativos = { "c-band": st.band, "c-bcor": st.bcor, "c-hl": st.hl, "c-tex": st.tex, "c-vis": st.vis, "c-peso": st.peso, "c-caixa": st.caixa, "c-fmt": st.fmt, "c-ali": st.ali, "c-mark": st.mark, "c-bar": st.bar };
+  Object.entries(ativos).forEach(([id, v]) => $(id).querySelectorAll(".chip").forEach((b) => b.setAttribute("aria-pressed", String(b.id === `${id}-${v}`))));
+  $("c-mostrar").querySelectorAll(".chip").forEach((b) => b.setAttribute("aria-pressed", String(!!st[b.id.replace("c-mostrar-", "")])));
+  [["c-fundo", st.fundo], ["c-dest", st.dest]].forEach(([id, v]) => {
+    $(id).querySelectorAll(".cor").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.hex.toLowerCase() === v.toLowerCase())));
+    $(`${id}-livre`).value = v;
+  });
+  $("c-fd").value = st.fd; $("c-fb").value = st.fb; $("c-int").value = st.int; $("c-vin").value = st.vin; $("c-tam").value = st.tam; $("c-zoom").value = st.zoom; $("c-bq").value = st.bq;
+}
+
+/* ---------------- conteúdo das páginas ---------------- */
+/* ---------------- dados ----------------
+   O gerar_carrossel.py preenche window.DADOS com os números de resultados/.
+   Os valores abaixo são só reserva, para abrir o arquivo direto no navegador
+   (resultado de 09/11/2026). */
+const D = window.DADOS || {
+  top10: [["Áustria",40],["Interlagos",39],["Malásia",30],["Mônaco",20],["Spa",19],["Silverstone",18],["Suzuka",18],["Miami",16],["Montreal",16],["Zandvoort",15]],
+  interlagos: 39, spa: 19, corridas: 23, anos: 30, ano_ini: 1996, ano_fim: 2025, ano_cal: 2026,
+  meses: [["jan",69],["fev",67],["mar",63],["abr",32],["mai",17],["jun",11],["jul",9],["ago",11],["set",19],["out",32],["nov",43],["dez",54]],
+  mes_gp: "nov", min: ["julho", 9], max: ["janeiro", 69], mes_gp_extenso: "novembro",
+  perto_de_zero: "Abu Dhabi, Catar e Baku",
+};
+const TOP10 = D.top10;
+const MESES = D.meses;
+const FAM = new Set(["Áustria", "Silverstone", "Spa"]);
+const hl = (t) => `<span class="hl ${st.hl}">${t}</span>`;
+const lin = (t) => `<span>${t}</span>`;
+function icone(i) {
+  const c = "var(--s-acc-forte)";
+  if (st.mark === "circulo") return `<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="${c}" stroke-width="5"/><path d="M16 27 l7 7 l14 -16" fill="none" stroke="${c}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  if (st.mark === "check") return `<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M9 28 l11 11 l23 -26" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  if (st.mark === "seta") return `<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M8 26 h32 M28 13 l13 13 l-13 13" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<svg viewBox="0 0 52 52" aria-hidden="true"><rect x="3" y="3" width="46" height="46" fill="${c}"/><text x="26" y="36" text-anchor="middle" font-size="28" font-weight="800" fill="var(--s-acc-txt)" font-family="var(--s-fd)">${i + 1}</text></svg>`;
+}
+/* marcador opcional: nas ressalvas ("o que não garante") um check passaria a ideia errada, então usa número */
+const lista = (itens, marca) => { const m = st.mark; if (marca) st.mark = marca; const h = `<ul class="lista">${itens.map((t, i) => `<li><span class="ic">${icone(i)}</span><span>${t}</span></li>`).join("")}</ul>`; st.mark = m; return h; };
+const texto = (t) => `<p class="texto ${st.barra ? "barra" : ""}">${t}</p>`;
+
+function gotas(x, y, n, escala) {
+  let s = ""; const pos = [[0,0,1],[150,-60,.7],[70,170,.85],[230,120,.6],[-40,300,.55],[180,330,.75],[300,-10,.45]];
+  pos.slice(0, n).forEach(([dx, dy, k]) => { const r = 46 * k * escala;
+    s += `<svg class="visual" style="left:${x + dx}px;top:${y + dy}px;width:${r * 2.2}px;height:${r * 3.2}px" viewBox="0 0 44 64" aria-hidden="true"><path d="M22 2 C22 2 4 26 4 41 a18 18 0 0 0 36 0 C40 26 22 2 22 2Z" fill="var(--s-acc-forte)" opacity="${.35 + k * .55}"/></svg>`; });
+  return s;
+}
+
+function paginas(H) {
+  const p = [];
+  p.push({ leg: "Capa", html: `<div class="kicker">Chuva na F1</div>
+    <h2 class="titulo">${lin("Spa tem fama.")}${hl("Interlagos")}${lin("tem o dobro.")}</h2>
+    ${texto(`${D.anos} anos de clima e as ${D.corridas} corridas de ${D.ano_cal}: onde mais chove na hora da corrida?`)}
+    <div class="capa-num"><span class="grande">${D.interlagos}%</span><span class="cap">de chance de chuva na corrida em Interlagos</span>
+      <span class="defin">Em Spa, ${D.spa}%. Chuva nas 2 horas após a largada, de ${D.ano_ini} a ${D.ano_fim}.</span></div>` });
+  p.push({ leg: "O achado", html: `<div class="kicker">O ranking da chuva</div>
+    <h2 class="titulo menor">${lin("Empate")}${hl("no topo")}</h2>
+    <div class="ranking" style="gap:10px">${TOP10.map(([n, v]) => `<div class="r ${n === "Interlagos" ? "dest" : FAM.has(n) ? "fam" : ""}"><span class="nm">${n}</span><span class="bar" style="width:${(v / TOP10[0][1]) * 100}%"></span><span class="pc">${v}%</span></div>`).join("")}</div>
+    <p class="texto" style="font-size:25px;opacity:.85;max-width:900px">Chance de chover nas 2 horas após a largada, na data e no horário do GP de ${D.ano_cal}, de ${D.ano_ini} a ${D.ano_fim}. Malásia = Sepang. ${D.perto_de_zero} ficam perto de zero.</p>`, fonte: true });
+  p.push({ leg: "O mês", html: `<div class="kicker">E se mudasse a data?</div>
+    <h2 class="titulo menor">${lin("O mês")}${hl("muda tudo")}</h2>
+    <div class="meses">${MESES.map(([m, v]) => `<div class="mes ${m === D.mes_gp ? "dest" : ""}"><span class="v">${v}%</span><span class="col"><span class="b" style="height:${(v / Math.max(...MESES.map((x) => x[1]))) * 100}%"></span></span><span class="m">${m}</span></div>`).join("")}</div>
+    ${texto(`Em Interlagos, a chance de chover entre 14h e 16h vai de ${D.min[1]}% em ${D.min[0]} a ${D.max[1]}% em ${D.max[0]}. O GP cai em ${D.mes_gp_extenso}: ${MESES.find((x) => x[0] === D.mes_gp)[1]}%.`)}
+    <p class="texto" style="font-size:25px;opacity:.85;max-width:900px">Todos os dias de cada mês, de ${D.ano_ini} a ${D.ano_fim}.</p>`, fonte: true });
+  p.push({ leg: "A lição", html: `<div class="kicker">A lição</div>
+    <h2 class="titulo">${lin("Fama")}${lin("não é")}${hl("dado")}</h2>
+    ${texto(`Na semana do GP, choveu em ${Math.round(D.interlagos / 10)} de cada 10 tardes de corrida em Interlagos. Quem marca um evento ao ar livre em São Paulo nessa época deveria contar com isso.`)}
+    <span class="forte">Antes de escolher a data, olhe o histórico.</span>
+    <div class="gotas10"><div class="fila">${Array.from({ length: 10 }, (_, k) => `<svg width="64" height="92" viewBox="0 0 44 64" aria-hidden="true"><path d="M22 2 C22 2 4 26 4 41 a18 18 0 0 0 36 0 C40 26 22 2 22 2Z" fill="${k < Math.round(D.interlagos / 10) ? "var(--s-acc-forte)" : "var(--s-fg)"}" opacity="${k < Math.round(D.interlagos / 10) ? 1 : .18}"/></svg>`).join("")}</div>
+      <span class="cap">${D.interlagos}% das tardes da semana do GP tiveram chuva.</span></div>`, fonte: true });
+  return p;
+}
+
+/* ---------------- desenho ---------------- */
+function textura(fg, H) {
+  const a = st.int / 100;
+  const l1 = rgba(fg, .07 * a * 2), l2 = rgba(fg, .16 * a * 2);
+  if (st.tex === "planta") return `background-image: linear-gradient(${l2} 2px, transparent 2px), linear-gradient(90deg, ${l2} 2px, transparent 2px), linear-gradient(${l1} 1px, transparent 1px), linear-gradient(90deg, ${l1} 1px, transparent 1px); background-size: 180px 180px, 180px 180px, 36px 36px, 36px 36px;`;
+  if (st.tex === "fina") return `background-image: linear-gradient(${l1} 1px, transparent 1px), linear-gradient(90deg, ${l1} 1px, transparent 1px); background-size: 54px 54px;`;
+  if (st.tex === "pontos") return `background-image: radial-gradient(${l2} 2.6px, transparent 3px); background-size: 36px 36px;`;
+  if (st.tex === "diagonais") return `background-image: repeating-linear-gradient(135deg, ${l1} 0 2px, transparent 2px 28px);`;
+  return "";
+}
+
+function render() {
+  marcarControles();
+  const H = st.fmt === "45" ? 1350 : 1080;
+  const fundo = st.fundo, esc = escuro(fundo);
+  const fg = esc ? "#FFFFFF" : "#121418";
+  // destaque: se quase igual ao fundo, usa o contraste do texto
+  const acc = contraste(st.dest, fundo) < 1.6 ? fg : st.dest;
+  const accTxt = contraste(acc, "#FFFFFF") >= 3 ? "#FFFFFF" : (esc ? fundo : "#121418");
+  const accForte = contraste(acc, fundo) >= 2.2 ? acc : fg;   // para números e ícones sobre o fundo
+  const [nomeF, famF, pesoF, multF, lsF] = FONTES_T[st.fd];
+  const fb = FONTES_B[st.fb][1] || famF;
+  const peso = st.peso === "auto" ? pesoF : (famF === "Bebas Neue" ? 400 : +st.peso);
+  const vars = `--s-bg:${fundo};--s-fg:${fg};--s-acc:${acc};--s-acc-txt:${accTxt};--s-acc-forte:${accForte};--s-linha:${rgba(fg, .25)};
+    --s-fd:'${famF}', Arial, sans-serif;--s-fb:'${fb}', Arial, sans-serif;--s-fdw:${peso};--s-tam:${(st.tam / 100) * multF * (H < 1200 ? .9 : 1)};
+    --s-tt:${st.caixa === "alta" ? "uppercase" : "none"};--s-ls:${lsF};--s-align:${st.ali === "centro" ? "center" : "left"};--s-items:${st.ali === "centro" ? "center" : "flex-start"};
+    --s-rad:${st.bar === "arred" ? "22px" : "0"};--s-flag:${st.bcor === "destaque" ? accForte : fg};--s-num:${(st.tam / 100) * (H < 1200 ? .8 : 1)};--s-q2:${st.bq * 2}px;height:${H}px;`;
+  const vin = st.vin / 100;
+  const pags = paginas(H);
+  const larg = st.zoom, escala = larg / 1080;
+  $("trilho").innerHTML = pags.map((pg, i) => {
+    const q2 = st.bq * 2;
+    const posBand = { baixo: `left:0;right:0;bottom:0;height:${q2}px`, topo: `left:0;right:0;top:0;height:${q2}px`,
+      lateral: `left:0;top:0;bottom:0;width:${q2}px`, canto: `top:0;right:0;width:${st.bq * 12}px;height:${st.bq * 12}px;clip-path:polygon(0 0,100% 0,100% 100%)` }[st.band];
+    const band = posBand ? `<div class="bandeira" style="${posBand}"></div>` : "";
+    const padC = st.band === "baixo" ? `padding-bottom:${150 + q2}px` : st.band === "topo" ? `padding-top:${96 + q2}px` : st.band === "lateral" ? `padding-left:${90 + q2}px` : st.band === "canto" ? "padding-right:200px" : "";
+    const padR = st.band === "baixo" ? `bottom:${50 + q2}px` : st.band === "lateral" ? `left:${90 + q2}px` : "";
+    const rod = `<div class="rodape" style="${padR}">
+        <span>${st.assin ? "João Vitor Barberino" : ""}${pg.fonte ? `<br><span class="fonte">Dados: Open-Meteo (ERA5) e OpenF1</span>` : ""}</span>
+        <span class="seta">${st.num ? `${i + 1}/${pags.length}` : ""}${st.seta && i < pags.length - 1 ? `<svg width="44" height="24" viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12 h36 M28 3 l10 9 l-10 9" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ""}</span>
+      </div>`;
+    return `<div class="quadro"><div class="palco" style="width:${larg}px;height:${H * escala}px">
+      <div class="slide" data-align="${st.ali === "centro" ? "center" : "left"}" data-barras="${st.bar}" style="${vars}transform:scale(${escala})">
+        <div class="textura" style="${textura(fg, H)}"></div>
+        ${pg.visual || ""}
+        <div class="conteudo" style="${padC}">${pg.html}</div>
+        <div class="vinheta" style="background:radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,${.55 * vin}) 100%)"></div>
+        ${band}${rod}
+      </div></div><span class="leg">${i + 1}. ${pg.leg}</span></div>`;
+  }).join("");
+  try { localStorage.setItem("estudio-terca-v3", JSON.stringify(st)); } catch (e) {}
+  $("aviso").textContent = "";
+}
+
+function resumo() {
+  const nome = (lista, hex) => (lista.find(([, h]) => h.toLowerCase() === hex.toLowerCase()) || ["cor própria " + hex])[0];
+  const t = { hl: { caixa: "caixa", contorno: "contorno", marca: "marca-texto", cor: "só a cor" }, tex: { planta: "grade de planta", fina: "grade fina", pontos: "pontos", diagonais: "diagonais", lisa: "lisa" },
+    vis: { gotas: "gotas", numero: "número gigante na capa", nenhum: "nenhum" }, band: { baixo: "embaixo", topo: "em cima", lateral: "lateral", canto: "no canto", nenhuma: "sem bandeira" }, mark: { circulo: "check em círculo", check: "check", seta: "seta", numero: "número" }, bar: { solida: "sólidas", arred: "arredondadas", contorno: "contorno" } };
+  return `Minha escolha: fundo ${nome(FUNDOS, st.fundo)}, destaque ${nome(DESTAQUES, st.dest)} (${t.hl[st.hl]}), textura ${t.tex[st.tex]} ${st.int}%, vinheta ${st.vin}%, elemento ${t.vis[st.vis]}, bandeira ${t.band[st.band]} (quadrados de ${st.bq}px, ${st.bcor === "destaque" ? "cor de destaque" : "cor do texto"}), título ${FONTES_T[st.fd][0].replace(/ \(.*\)/, "")} peso ${st.peso === "auto" ? "extra" : st.peso} tamanho ${st.tam}% ${st.caixa === "alta" ? "em caixa alta" : "normal"}, texto ${FONTES_B[st.fb][0]}, formato ${st.fmt === "45" ? "4:5" : "1:1"}, alinhado ${st.ali === "centro" ? "ao centro" : "à esquerda"}, marcador ${t.mark[st.mark]}, barras ${t.bar[st.bar]}${st.barra ? ", barra ao lado do texto" : ""}${st.num ? ", número da página" : ""}${st.seta ? ", seta" : ""}${st.assin ? ", assinatura" : ""}.`;
+}
+$("copiar").addEventListener("click", () => {
+  const t = resumo();
+  const falha = () => { $("aviso").textContent = t; };
+  try { navigator.clipboard.writeText(t).then(() => { $("aviso").textContent = "Copiado. É só colar na conversa."; }).catch(falha); } catch (e) { falha(); }
+});
+
+montarControles();
+render();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+</script>
